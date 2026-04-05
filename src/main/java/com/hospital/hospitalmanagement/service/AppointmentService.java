@@ -220,6 +220,14 @@ public class AppointmentService {
         appointment.setStatus(Appointment.AppointmentStatus.CANCELLED);
         appointment.setCancellationReason(reason);
         appointmentRepository.save(appointment);
+        emailService.sendAppointmentCancelledEmail(
+                appointment.getPatient().getUser().getEmail(),
+                appointment.getPatient().getUser().getFullName(),
+                appointment.getDoctor().getUser().getFullName(),
+                appointment.getAppointmentDate(),
+                appointment.getAppointmentTime(),
+                reason
+        );
         return AppointmentResponse.from(appointment);
     }
 }
