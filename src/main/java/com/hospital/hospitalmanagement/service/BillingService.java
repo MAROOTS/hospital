@@ -28,7 +28,7 @@ public class BillingService {
     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
-
+    private final EmailService emailService;
     @Transactional
     public InvoiceResponse createInvoice(CreateInvoiceRequest request){
         Patient patient = patientRepository.findById(request.getPatientId())

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4;
+               margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 30px auto; background: white;
+                     border-radius: 8px; overflow: hidden;
+                     box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header { background: #e65100; color: white;
+                  padding: 30px; text-align: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .body { padding: 30px; color: #333; line-height: 1.6; }
+        .details { background: #f9f9f9; border-radius: 6px;
+                   padding: 20px; margin: 20px 0; }
+        .details table { width: 100%; border-collapse: collapse; }
+        .details td { padding: 10px 0; border-bottom: 1px solid #eee; }
+        .details td:first-child { color: #666; width: 40%; }
+        .details td:last-child { font-weight: bold; }
+        .total { font-size: 20px; color: #e65100; }
+        .footer { background: #f4f4f4; text-align: center;
+                  padding: 15px; font-size: 12px; color: #999; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Invoice</h1>
+    </div>
+    <div class="body">
+        <p>Dear <strong th:text="${patientName}">Patient</strong>,</p>
+        <p>Please find your invoice details below:</p>
+        <div class="details">
+            <table>
+                <tr>
+                    <td>Invoice Number</td>
+                    <td th:text="${invoiceNumber}">INV-2026-000001</td>
+                </tr>
+                <tr>
+                    <td>Total Amount</td>
+                    <td class="total" th:text="${totalAmount}">KES 0.00</td>
+                </tr>
+                <tr>
+                    <td>Due Date</td>
+                    <td th:text="${dueDate}">30 Apr 2026</td>
+                </tr>
+                <tr>
+                    <td>Status</td>
+                    <td th:text="${status}">UNPAID</td>
+                </tr>
+            </table>
+        </div>
+        <p>Please ensure payment is made before the due date
+            to avoid penalties.</p>
+        <p>Best regards,<br/>
+            <strong>Hospital Management Team</strong></p>
+    </div>
+    <div class="footer">
+        &copy; 2026 Hospital Management System. All rights reserved.
+    </div>
+</div>
+</body>
+</html>

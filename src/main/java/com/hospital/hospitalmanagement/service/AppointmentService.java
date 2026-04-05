@@ -26,6 +26,7 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final DoctorRepository doctorRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     public AppointmentResponse bookAppointment(String email, BookAppointmentRequest request){
         User user = userRepository.findByEmail(email)
