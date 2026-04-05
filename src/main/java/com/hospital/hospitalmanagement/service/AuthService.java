@@ -32,6 +32,7 @@ public class AuthService {
                 .role(User.Role.PATIENT)
                 .build();
         userRepository.save(user);
+        emailService.sendWelcomeEmail(user.getEmail(), user.getFullName());
 
         String token = jwtUtil.generateToken(
                 user.getEmail(), user.getRole().name()
