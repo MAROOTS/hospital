@@ -67,6 +67,15 @@ public class AppointmentService {
                 .build();
 
         appointmentRepository.save(appointment);
+        emailService.sendAppointmentBookedEmail(
+                patient.getUser().getEmail(),
+                patient.getUser().getFullName(),
+                doctor.getUser().getFullName(),
+                doctor.getSpecialization(),
+                appointment.getAppointmentDate(),
+                appointment.getAppointmentTime(),
+                appointment.getType().name()
+        );
         return AppointmentResponse.from(appointment);
 
     }
