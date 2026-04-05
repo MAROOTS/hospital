@@ -67,6 +67,15 @@ public class BillingService {
                 .build();
 
         invoiceRepository.save(invoice);
+        emailService.sendInvoiceEmail(
+                patient.getUser().getEmail(),
+                patient.getUser().getFullName(),
+                invoice.getInvoiceNumber(),
+                invoice.getTotalAmount(),
+                invoice.getDueDate().format(
+                        java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy")),
+                invoice.getStatus().name()
+        );
         return InvoiceResponse.from(invoice);
     }
     public List<InvoiceResponse> getAllInvoices() {
