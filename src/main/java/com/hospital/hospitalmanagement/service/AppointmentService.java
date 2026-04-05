@@ -190,6 +190,17 @@ public class AppointmentService {
             appointment.setCancellationReason(request.getCancellationReason());
 
         appointmentRepository.save(appointment);
+        if (request.getStatus() != null) {
+            if (request.getStatus() == Appointment.AppointmentStatus.CONFIRMED) {
+                emailService.sendAppointmentConfirmedEmail(
+                        appointment.getPatient().getUser().getEmail(),
+                        appointment.getPatient().getUser().getFullName(),
+                        appointment.getDoctor().getUser().getFullName(),
+                        appointment.getAppointmentDate(),
+                        appointment.getAppointmentTime()
+                );
+            }
+        }
         return AppointmentResponse.from(appointment);
     }
 
