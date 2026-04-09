@@ -17,7 +17,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final EmailService emailService;
-
+    private final NotificationService notificationService;
     public AuthResponse register(RegisterRequest request){
         if (userRepository.existsByEmail(request.getEmail())){
             throw new RuntimeException("Email in use");
@@ -33,6 +33,12 @@ public class AuthService {
                 .role(User.Role.PATIENT)
                 .build();
         userRepository.save(user);
+        userRepository.findByRole(User.Role.ADMIN).forEach(admin ->
+                notificationService.notifyNewPatientRegistered(
+                        admin.getEmail(),
+                        user.getFullName()
+                )
+        );
         emailService.sendWelcomeEmail(user.getEmail(), user.getFullName());
 
         String token = jwtUtil.generateToken(

@@ -29,6 +29,7 @@ public class BillingService {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
     private final EmailService emailService;
+    private final NotificationService notificationService;
     @Transactional
     public InvoiceResponse createInvoice(CreateInvoiceRequest request){
         Patient patient = patientRepository.findById(request.getPatientId())
@@ -67,6 +68,12 @@ public class BillingService {
                 .build();
 
         invoiceRepository.save(invoice);
+        notificationService.notifyInvoiceCreated(
+                patient.getUser(),
+                invoice.getInvoiceNumber(),
+                String.format("KES %.2f", invoice.getTotalAmount()),
+                invoice.getId()
+        );
         emailService.sendInvoiceEmail(
                 patient.getUser().getEmail(),
                 patient.getUser().getFullName(),
@@ -127,6 +134,11 @@ public class BillingService {
 
         invoice.setPaymentMethod(request.getPaymentMethod());
         invoiceRepository.save(invoice);
+        notificationService.notifyInvoicePaid(
+                invoice.getPatient().getUser(),
+                invoice.getInvoiceNumber(),
+                invoice.getId()
+        );
         return InvoiceResponse.from(invoice);
     }
     @Transactional

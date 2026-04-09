@@ -20,7 +20,7 @@ public class MedicalRecordService {
     private final DoctorRepository doctorRepository;
     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
-
+    private final NotificationService notificationService;
     @Transactional
     public MedicalRecordResponse createRecord(String doctorEmail,
                                               CreateMedicalRecordRequest request) {
@@ -74,6 +74,12 @@ public class MedicalRecordService {
                 .build();
 
         medicalRecordRepository.save(record);
+        notificationService.notifyMedicalRecordCreated(
+                patient.getUser(),
+                doctor.getUser().getFullName(),
+                record.getDiagnosis(),
+                record.getId()
+        );
         return MedicalRecordResponse.from(record);
     }
 
