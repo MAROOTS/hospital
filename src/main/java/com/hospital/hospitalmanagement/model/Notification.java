@@ -34,7 +34,6 @@ public class Notification {
     @Builder.Default
     private boolean read = false;
 
-    // Optional reference to related entity
     private String referenceId;
     private String referenceType;
 

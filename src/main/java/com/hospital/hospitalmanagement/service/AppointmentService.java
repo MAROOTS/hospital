@@ -27,6 +27,7 @@ public class AppointmentService {
     private final DoctorRepository doctorRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final NotificationService notificationService;
 
     public AppointmentResponse bookAppointment(String email, BookAppointmentRequest request){
         User user = userRepository.findByEmail(email)
@@ -68,6 +69,14 @@ public class AppointmentService {
                 .build();
 
         appointmentRepository.save(appointment);
+        // Notify doctor
+        notificationService.notifyAppointmentBooked(
+                doctor.getUser(),
+                patient.getUser().getFullName(),
+                appointment.getAppointmentDate().toString(),
+                appointment.getAppointmentTime().toString(),
+                appointment.getId()
+        );
         emailService.sendAppointmentBookedEmail(
                 patient.getUser().getEmail(),
                 patient.getUser().getFullName(),
@@ -193,6 +202,13 @@ public class AppointmentService {
         appointmentRepository.save(appointment);
         if (request.getStatus() != null) {
             if (request.getStatus() == Appointment.AppointmentStatus.CONFIRMED) {
+                notificationService.notifyAppointmentConfirmed(
+                        appointment.getPatient().getUser(),
+                        appointment.getDoctor().getUser().getFullName(),
+                        appointment.getAppointmentDate().toString(),
+                        appointment.getAppointmentTime().toString(),
+                        appointment.getId()
+                );
                 emailService.sendAppointmentConfirmedEmail(
                         appointment.getPatient().getUser().getEmail(),
                         appointment.getPatient().getUser().getFullName(),
@@ -200,6 +216,7 @@ public class AppointmentService {
                         appointment.getAppointmentDate(),
                         appointment.getAppointmentTime()
                 );
+
             }
         }
         return AppointmentResponse.from(appointment);
@@ -221,6 +238,21 @@ public class AppointmentService {
         appointment.setStatus(Appointment.AppointmentStatus.CANCELLED);
         appointment.setCancellationReason(reason);
         appointmentRepository.save(appointment);
+        // Notify both patient and doctor
+        notificationService.notifyAppointmentCancelled(
+                appointment.getPatient().getUser(),
+                "Your appointment with Dr. " +
+                        appointment.getDoctor().getUser().getFullName() +
+                        " has been cancelled. Reason: " + reason,
+                appointment.getId()
+        );
+        notificationService.notifyAppointmentCancelled(
+                appointment.getDoctor().getUser(),
+                "Appointment with " +
+                        appointment.getPatient().getUser().getFullName() +
+                        " has been cancelled. Reason: " + reason,
+                appointment.getId()
+        );
         emailService.sendAppointmentCancelledEmail(
                 appointment.getPatient().getUser().getEmail(),
                 appointment.getPatient().getUser().getFullName(),
